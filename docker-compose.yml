@@ -1,0 +1,33 @@
+version: "3"
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:16.2-alpine3.19
+    networks:
+      - backend
+    restart: always
+    env_file: ./.env
+    environment:
+      - PGPORT=3000
+    ports:
+      - 3000:3000
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  app:
+    depends_on:
+      - postgres
+    build: .
+    networks:
+      - backend
+    restart: always
+    env_file: ./.env
+    ports:
+      - 5000:3000
+
+volumes:
+  pg_data:
