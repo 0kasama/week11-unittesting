@@ -1,9 +1,9 @@
-const { Todo } = require("../models/todoModel.js");
+const { todo } = require("../models");
 
 class todoController {
   static async getTodo(req, res, next) {
     try {
-      const data = await Todo.getTodo(next);
+      const data = await todo.findAll();
       res.status(200).json(data);
     } catch (err) {
       next(err);
@@ -13,8 +13,7 @@ class todoController {
   static async getTodoById(req, res, next) {
     try {
       const { id } = req.params;
-
-      const data = await Todo.getTodoById(id, next);
+      const data = await todo.findOne({ where: { id } });
       res.status(200).json(data);
     } catch (err) {
       next(err);
@@ -23,9 +22,9 @@ class todoController {
 
   static async postTodo(req, res, next) {
     try {
-      const { task, dueDate } = req.body;
-
-      const data = await Todo.postTodo(req.body, next);
+      console.log(req.body);
+      const { task } = req.body;
+      const data = await todo.create({ task });
       res.status(201).json(data);
     } catch (err) {
       next(err);
@@ -34,10 +33,13 @@ class todoController {
 
   static async putTodo(req, res, next) {
     const { id } = req.params;
-    const { task, dueDate } = req.body;
+    const { task } = req.body;
     try {
-      const data = await Todo.putTodo(req.body, req.params, next);
-      res.status(200).json({ message: "Todo Updated" });
+      const [rowsUpdated, [updatedTodo]] = await todo.update(
+        { task },
+        { where: { id }, returning: true }
+      );
+      res.status(200).json(updatedTodo);
     } catch (err) {
       next(err);
     }
@@ -46,7 +48,12 @@ class todoController {
   static async deleteTodo(req, res, next) {
     const { id } = req.params;
     try {
-      const data = await Todo.deleteTodo(id, next);
+      const deletedRowCount = await todo.destroy({ where: { id } });
+      if (deletedRowCount === 0) {
+        const notFoundErr = new Error("Todo not found");
+        notFoundErr.name = "NotFound";
+        throw notFoundErr;
+      }
       res.status(200).json({ message: "Todo Deleted" });
     } catch (err) {
       next(err);

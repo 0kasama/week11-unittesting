@@ -12,18 +12,21 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    await queryInterface.bulkInsert("Todos", [
+    await queryInterface.bulkInsert("todos", [
       {
         task: "Self Learning",
-        dueDate: new Date(2024, 2, 23),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         task: "Mentoring",
-        dueDate: new Date(2024, 2, 20),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         task: "Live Session",
-        dueDate: new Date(2024, 2, 24),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     ]);
   },
@@ -34,7 +37,8 @@ module.exports = {
      *
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
+     *
      */
-    await queryInterface.bulkDelete('Todos', null, {})
+    await queryInterface.bulkDelete("todos", null, {});
   },
 };
